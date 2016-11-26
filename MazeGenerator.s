@@ -5,7 +5,7 @@
 #
 # by Patrick Kelley
 #
-# This program produces a maze in an 80 X 24 grid by recursively pathing 
+# This program produces a maze in an 80 X 24 grid by recursively pathing
 # through the grid space.  It is an implementation of the following C++ code
 # and is an example of equivalent coding.  As such, the complete code is given
 # below and then repeated as comments in the assembly code.
@@ -29,7 +29,7 @@
 # //===========================================================================
 # #include <iostream>
 # using namespace std;
-# 
+#
 # //----CONSTANTS-------------------------------------------------------
 # #define GRID_WIDTH 79
 # #define GRID_HEIGHT 23
@@ -37,17 +37,17 @@
 # #define EAST 1
 # #define SOUTH 2
 # #define WEST 3
-# 
+#
 # //----GLOBAL VARIABLES------------------------------------------------
 # char grid[GRID_WIDTH*GRID_HEIGHT];
-# 
+#
 # //----FUNCTION PROTOTYPES---------------------------------------------
 # void ResetGrid();
 # int XYToIndex( int x, int y );
 # int IsInBounds( int x, int y );
 # void Visit( int x, int y );
 # void PrintGrid();
-# 
+#
 # //----FUNCTIONS-------------------------------------------------------
 # int main()
 # {
@@ -58,7 +58,7 @@
 #   PrintGrid();
 #   return 0;
 # }
-# 
+#
 # void ResetGrid()
 # {
 #   // Fills the grid with walls ('#' characters).
@@ -67,14 +67,14 @@
 #     grid[i] = '#';
 #   }
 # }
-# 
+#
 # int XYToIndex( int x, int y )
 # {
 #   // Converts the two-dimensional index pair (x,y) into a
 #   // single-dimensional index. The result is y * ROW_WIDTH + x.
 #   return y * GRID_WIDTH + x;
 # }
-# 
+#
 # int IsInBounds( int x, int y )
 # {
 #   // Returns "true" if x and y are both in-bounds.
@@ -82,14 +82,14 @@
 #   if (y < 0 || y >= GRID_HEIGHT) return false;
 #   return true;
 # }
-# 
+#
 # void Visit( int x, int y )
 # {
 #   // Starting at the given index, recursively visits every direction in a
 #   // randomized order.
 #   // Set my current location to be an empty passage.
 #   grid[ XYToIndex(x,y) ] = ' ';
-#   
+#
 #   // Create an local array containing the 4 directions and shuffle their
 #   // order.
 #   int dirs[4];
@@ -97,7 +97,7 @@
 #   dirs[1] = EAST;
 #   dirs[2] = SOUTH;
 #   dirs[3] = WEST;
-#   
+#
 #   for (int i=0; i<4; ++i)
 #   {
 #     int r = rand() & 3;
@@ -105,7 +105,7 @@
 #     dirs[r] = dirs[i];
 #     dirs[i] = temp;
 #   }
-#   
+#
 #   // Loop through every direction and attempt to Visit that direction.
 #   for (int i=0; i<4; ++i)
 #   {
@@ -119,12 +119,12 @@
 #       case EAST: dx = 1; break;
 #       case WEST: dx = -1; break;
 #     }
-#     
+#
 #     // Find the (x,y) coordinates of the grid cell 2 spots
 #     // away in the given direction.
 #     int x2 = x + (dx<<1);
 #     int y2 = y + (dy<<1);
-#     
+#
 #     if (IsInBounds(x2,y2))
 #     {
 #       if (grid[ XYToIndex(x2,y2) ] == '#')
@@ -132,14 +132,14 @@
 #         // (x2,y2) has not been visited yet... knock down the
 #         // wall between my current position and that position
 #         grid[ XYToIndex(x2-dx,y2-dy) ] = ' ';
-#         
+#
 #         // Recursively Visit (x2,y2)
 #         Visit(x2,y2);
 #       }
 #     }
 #   }
 # }
-# 
+#
 # void PrintGrid()
 # {
 #   // Displays the finished maze to the screen.
@@ -169,7 +169,7 @@
 #==============================================================================
 # CONSTANTS:
 #
-# #define GRID_WIDTH 79			
+# #define GRID_WIDTH 79
 # #define GRID_HEIGHT 23
 # #define NORTH 0
 # #define EAST 1
@@ -177,15 +177,15 @@
 # #define WEST 3
 #==============================================================================
 	.data
-GRID_WIDTH:	.word	80		# need to add 1 to print as string
+GRID_WIDTH:	  .word	80		# need to add 1 to print as string
 GRID_HEIGHT:	.word	23
-GRID_SIZE:	.word	1840		# because I can't precalculate it in
+GRID_SIZE:	  .word	1840		# because I can't precalculate it in
 					# MIPS like I could in MASM
 NORTH:		.word	0
-EAST:		.word   1
+EAST:		  .word 1
 SOUTH:		.word	2
-WEST:		.word	3
-RGEN:		.word	1073807359	# a sufficiently large prime for rand
+WEST:		  .word	3
+RGEN:		  .word	1073807359	# a sufficiently large prime for rand
 POUND:		.byte	35		# the '#' character
 SPACE:		.byte	32		# the ' ' character
 NEWLINE:	.byte	10		# the newline character
@@ -268,7 +268,7 @@ ResetGrid:
 	# to store the character value I will write, a register to store the
 	# width of the grid, a register to store the newline character, and
 	# finally, a register to hold calculation results.
-	
+
 	# save the registers
 	sw	$s0, -4($sp)	# $s0 will be the loop counter
 	sw	$s1, -8($sp)	# $s1 will hold the array bound
@@ -278,7 +278,7 @@ ResetGrid:
 	sw      $s5, -24($sp)   # $s5 will hold the newline character
 	sw	$s6, -28($sp)	# $s6 used for calculations
 	# NOTICE THAT I DON'T BOTHER MOVING THE STACK POINTER
-	
+
 	# load the working values
 	li	$s0, 1		# initialize the counter
 	lw	$s1, GRID_SIZE	# initialize the array bound
@@ -286,7 +286,7 @@ ResetGrid:
 	lb	$s3, POUND	# store the '#' ASCII code
 	lw	$s4, GRID_WIDTH # store the grid width
 	lb	$s5, NEWLINE	# store the newline ASCII code
-  
+
 ResetLoop:
 	sb	$s3, 0($s2)	# put a '#' in the grid
 	addi	$s0, $s0, 1	# increment the loop counter
@@ -294,30 +294,30 @@ ResetLoop:
 	div	$s0, $s4	# divide the counter by grid width
 	mfhi	$s6		# get remainder in calculation register
 	bnez	$s6, NoNewLine	# keep going
-	
+
 	sb	$s5, 0($s2)     # put a newline in the grid
 	addi	$s0, $s0, 1	# increment the loop counter
 	addi	$s2, $s2, 1	# point at next char position
-	
+
 NoNewLine:
 	blt	$s0, $s1, ResetLoop	# if less than end, loop again
-	
+
 	# when we fall out of the loop, restore the registers and return
-	lw	$s0, -4($sp)	
-	lw	$s1, -8($sp)	
-	lw	$s2, -12($sp)	
-	lw	$s3, -16($sp)	
-	lw	$s4, -20($sp)	
-	lw      $s5, -24($sp)   
+	lw	$s0, -4($sp)
+	lw	$s1, -8($sp)
+	lw	$s2, -12($sp)
+	lw	$s3, -16($sp)
+	lw	$s4, -20($sp)
+	lw      $s5, -24($sp)
 	lw	$s6, -28($sp)
 	# IN A LANGUAGE WITH PUSH/POP, YOU WOULD HAVE TO POP THEM
 	# FROM THE STACK IN THE REVERSE ORDER YOU PUSHED THEM.
-	
+
 	jr	$ra		# return
-	
+
 #==============================================================================
 # srand()
-# 
+#
 # Unlike the C++ equivalent, this routine has to ask the user for a seed,
 # because we don't have access to a time string. So I borrowed code from a
 # linear congruence project to prompt for a large integer and save it as a
@@ -331,7 +331,7 @@ srand:
 	sw	$v0, -4($sp)	# $v0 will be the service code
 	sw	$a0, -8($sp)	# $a0 will point to the grid string
 	sw	$s0, -12($sp)	# $s0 will hold the input for testing
-	
+
 	# prompt for a random seed and get the value
 	la	$a0, rsdPrompt
 	li	$v0, 4		# print_string
@@ -355,21 +355,21 @@ input11:
 	syscall
 	j	input10		# try again
 
-input12:	
+input12:
 	# number is good, save and move on
 	sw	$v0, rSeed
-	
+
 	# restore the registers
-	lw	$v0, -4($sp)	
-	lw	$a0, -8($sp)	
+	lw	$v0, -4($sp)
+	lw	$a0, -8($sp)
 	lw	$s0, -12($sp)
 
 	jr	$ra		# return
-	
+
 #==============================================================================
 # rand(int min, int max)
-# 
-# It uses the rSeed and RGEN values to create a new psuedo-random and a new 
+#
+# It uses the rSeed and RGEN values to create a new psuedo-random and a new
 # seed for the next time this routine is called.  It range-fits the psuedo-
 # random to the range min-max and returns it.  It does not need to formalize a
 # stack frame since it doesn't call any other routines, so we simply set the
@@ -384,7 +384,7 @@ rand:
 	#         test it before you actually need to use it.
 
 	jr	$ra		# return
-	
+
 #==============================================================================
 # int XYToIndex( int x, int y )
 # {
@@ -393,16 +393,24 @@ rand:
 #   return y * GRID_WIDTH + x;
 # }
 #
-# Like rand, this uses the stack only for getting and returning values.  
+# Like rand, this uses the stack only for getting and returning values.
 # -4($sp) is the return, -8($sp) is x, and -12($sp) is y.
 #==============================================================================
 XYToIndex:
 
-	# TO DO:  You won't need this until you are ready to tackle the Visit
-	#         routine, but you can go ahead and get it written and then
-	#         test it before you actually need to use it.
 
-	jr	$ra		# return
+	lw			$t0, -8($sp)			# load x
+	lw			$t1, -12($sp)			# load y
+	lw			$t2, GRID_WIDTH 	# load grid width
+
+	multu		$t1, $t2					# multiply y and width
+	mflo		$t3								# store prduct in t3
+
+	addu		$t3, $t3, $t0 		# add x to product
+
+	sw			$t3, -4($sp)			# put answer in stack
+
+	jr			$ra								# return
 
 
 #================================================================================
@@ -425,7 +433,28 @@ IsInBounds:
 	#         routine, but you can go ahead and get it written and then
 	#         test it before you actually need to use it.
 
-	jr	$ra		# return
+	lw			$t0, -8($sp)			# load x
+	lw			$t1, -12($sp)			# load y
+	lw			$t2, GRID_WIDTH 	# load grid width
+	lw			$t3, GRID_HEIGHT	# load grid height
+
+	bgt			$t0, $t2, ReturnFalse		# x > GRID_WIDTH
+	blt			$t0, 0, ReturnFalse		  # x < 0
+
+	bge			$t1, $t3, ReturnFalse		# y >= GRID_HEIGHT
+	blt			$t1, 0, ReturnFalse			# y < 0
+
+	li			$t0, 1						# if we've made it this far, return 1 for true
+	sw			$t0, -4($sp)			# put it in the stack
+
+	jr			$ra								# return
+
+ReturnFalse:
+
+	li			$t0, 0						# we want to return 0 for false
+	sw			$t0, -4($sp)			# put it return in stack
+
+	jr			$ra								# return
 
 #==============================================================================
 # void Visit( int x, int y )
@@ -434,7 +463,7 @@ IsInBounds:
 #   // randomized order.
 #   // Set my current location to be an empty passage.
 #   grid[ XYToIndex(x,y) ] = ' ';
-#   
+#
 #   // Create an local array containing the 4 directions and shuffle their
 #   // order.
 #   int dirs[4];
@@ -442,7 +471,7 @@ IsInBounds:
 #   dirs[1] = EAST;
 #   dirs[2] = SOUTH;
 #   dirs[3] = WEST;
-#   
+#
 #   for (int i=0; i<4; ++i)
 #   {
 #     int r = rand() & 3;
@@ -450,7 +479,7 @@ IsInBounds:
 #     dirs[r] = dirs[i];
 #     dirs[i] = temp;
 #   }
-#   
+#
 #   // Loop through every direction and attempt to Visit that direction.
 #   for (int i=0; i<4; ++i)
 #   {
@@ -464,12 +493,12 @@ IsInBounds:
 #       case EAST: dx = 1; break;
 #       case WEST: dx = -1; break;
 #     }
-#     
+#
 #     // Find the (x,y) coordinates of the grid cell 2 spots
 #     // away in the given direction.
 #     int x2 = x + (dx<<1);
 #     int y2 = y + (dy<<1);
-# 
+#
 #     if (IsInBounds(x2,y2))
 #     {
 #       if (grid[ XYToIndex(x2,y2) ] == '#')
@@ -477,7 +506,7 @@ IsInBounds:
 #         // (x2,y2) has not been visited yet... knock down the
 #         // wall between my current position and that position
 #         grid[ XYToIndex(x2-dx,y2-dy) ] = ' ';
-#         
+#
 #         // Recursively Visit (x2,y2)
 #         Visit(x2,y2);
 #       }
@@ -493,9 +522,9 @@ Visit:
 
 	# TO DO:  You won't need this for project 9; it is just a placeholder
 	#         for project 10.
-	
+
 	jr	$ra
-	
+
 #==============================================================================
 # void PrintGrid()
 # {
@@ -512,10 +541,11 @@ Visit:
 #==============================================================================
 PrintGrid:
 
-	# This is even easier than the C++ code because I've set the grid up as 
-	# one long string so you can simply use a system service to print it to 
-	# the console. Doing character by character printing in MASM was more 
+	# This is even easier than the C++ code because I've set the grid up as
+	# one long string so you can simply use a system service to print it to
+	# the console. Doing character by character printing in MASM was more
 	# complicated. We need to preserve 2 registers, $v0 and $a0 used for
 	# this system service.
+
 
 	jr	$ra		# return
