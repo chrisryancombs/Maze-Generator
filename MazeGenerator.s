@@ -1,5 +1,12 @@
-# TO DO: Put your own header here.  You may want to keep the C++ listing until
-#        you are sure everything is working.
+# MazeGenerator.s
+#
+# by Christopher Combs
+#
+# Using skeleton code by Patrick Kelly
+#
+# QtSpim
+#
+# Last modified: 11/25/2016
 #==============================================================================
 # maze.s
 #
@@ -241,6 +248,57 @@ rSeed:	.word	0		# a seed for generating a random number
 main:
 	sw	$ra, 0($sp)	# save the return address
 	jal	srand		# get a random seed
+
+	li	$t9, 1
+	li	$t8, 10
+	sw	$t9, -8($sp)		# Set min to 1
+	sw 	$t8, -12($sp)		# Set max to 10
+	jal rand		        # TEST RAND
+
+	lw	$a0, -4($sp)
+	li	$v0, 1					# Print output of rand
+	syscall
+	la  $a0, NEWLINE
+	li	$v0, 4
+	syscall
+
+	li $t9, 1
+	li $t8, 5
+	sw	$t9, -8($sp)		# Set x to 1
+	sw 	$t8, -12($sp)		# Set y to 5
+	jal XYToIndex		    # TEST XYTOINDEX
+
+	lw	$a0, -4($sp)
+	li	$v0, 1					# Print output of xytoindex
+	syscall
+	la  $a0, NEWLINE
+	li	$v0, 4
+	syscall
+
+	jal IsInBounds		  # TEST IsInBounds
+
+	lw	$a0, -4($sp)
+	li	$v0, 1					# Print output of XYToIndex
+	syscall
+	la  $a0, NEWLINE
+	li	$v0, 4
+	syscall
+
+	li $t9, 100
+	li $t8, 500
+	sw	$t9, -8($sp)		# Set x to 100
+	sw 	$t8, -12($sp)		# Set y to 500
+	jal IsInBounds		    # TEST XYTOINDEX
+
+	lw	$a0, -4($sp)
+	li	$v0, 1					# Print output of xytoindex
+	syscall
+	la  $a0, NEWLINE
+	li	$v0, 4
+	syscall
+
+
+
 	jal	ResetGrid	# reset the grid to '#'s
 	li	$t0, 1		# set up for start of generation at (1,1)
 	sw	$t0, -4($sp)	# push first param
@@ -383,7 +441,27 @@ rand:
 	#         routine, but you can go ahead and get it written and then
 	#         test it before you actually need to use it.
 
-	jr	$ra		# return
+	lw			$t0, -8($sp)		# load min
+	lw			$t1, -12($sp)		# load max
+	lw			$t2, rSeed			# load seed
+	lw			$t3, RGEN				# load random generator
+
+	multu		$t2, $t3				# multiply seed and generator
+	mflo		$t4							# low becomes new seed
+	mfhi		$t5							# high becomes pseudorandom
+	sw			$t4, rSeed			# store the new seed
+
+	sub			$t6, $t1, $t0		# find range (max - min)
+	addiu		$t6, $t6, 1			# add one to range
+
+	divu		$t5, $t6				# divide pseudorandom by (range + 1)
+	mfhi		$t7							# get remainder
+	addu		$t7, $t7, $t0		# add minimum to remainder, range fit complete
+
+	sw			$t7, -4($sp)		# store in the stack
+
+
+	jr			$ra							# return
 
 #==============================================================================
 # int XYToIndex( int x, int y )
@@ -547,5 +625,14 @@ PrintGrid:
 	# complicated. We need to preserve 2 registers, $v0 and $a0 used for
 	# this system service.
 
+	move		$t0, $v0		# preserve v0
+	move		$t1, $a0		# preserve a0
 
-	jr	$ra		# return
+	la 			$a0, grid 	# load our grid to be printed
+	li			$v0, 4			# we want to print a string
+	syscall
+
+	move		$v0, $t0		# put v0 back
+	move		$a0, $t1		# put a0 back
+
+	jr	$ra							# return
